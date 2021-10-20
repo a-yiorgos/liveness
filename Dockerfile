@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.10
 WORKDIR /usr/src
 RUN pip --no-cache-dir install bottle
 COPY app.py .
