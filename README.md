@@ -6,5 +6,5 @@ For the first 10 seconds that the container of `k8s.gcr.io/liveness` is alive, t
 It now can also be used to simulate failures for liveness, readiness and startup probes, with the desired percentage failure, depending the pathname:
 
 - `/liveness/36`
-- `/rediness/48`
+- `/readiness/48`
 - `/startup/12`
