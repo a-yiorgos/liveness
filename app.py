@@ -1,39 +1,44 @@
+import os
 import random
-from bottle import get, route, run, response, abort
+from fastapi import FastAPI, HTTPException
+import uvicorn
+
+app = FastAPI()
 
 
-@get('/favicon.ico')
+@app.get('/favicon.ico')
 def get_favicon():
+    return {
+        "favicon": "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII="
+    }
 
-    response.content_type = 'image/x-icon'
 
-    return "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII="
-
-
-@route("/healthz")
+@app.get("/healthz")
 def healthz():
-
     if random.randint(1, 10) < 4:
-        abort(500, "Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     else:
-        return "ok"
+        return {"status": "ok"}
 
 
-@route("/liveness/<num:int>")
-@route("/readiness/<num:int>")
-@route("/startup/<num:int>")
-def probe(num=10):
-
+@app.get("/liveness/{num}")
+@app.get("/readiness/{num}")
+@app.get("/startup/{num}")
+def probe(num: int = 10):
     r = random.randint(1, 100)
     if r < num:
-        abort(500, f"Internal Server Error - {r=}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal Server Error - {r=}"
+        )
     else:
-        return f"ok - {r=}"
+        return {"status": f"ok - {r=}"}
 
 
-@route('<url:re:.*>')
-def hello(url='/'):
-    return "ok"
+@app.get("/{url:path}")
+def hello(url: str = ""):
+    return {"status": "ok"}
 
 
-run(host='0.0.0.0', port=8081, debug=True)
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8081))
+    uvicorn.run(app, host="0.0.0.0", port=port)

@@ -1,5 +1,20 @@
-FROM python:3.10
-WORKDIR /usr/src
-RUN pip --no-cache-dir install bottle
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8081
+
+WORKDIR /app
+
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY app.py .
-ENTRYPOINT [ "python3", "app.py" ]
+
+USER appuser
+
+EXPOSE ${PORT}
+
+ENTRYPOINT ["python3", "app.py"]
