@@ -8,3 +8,5 @@ It now can also be used to simulate failures for liveness, readiness and startup
 - `/liveness/36`
 - `/readiness/48`
 - `/startup/12`
+
+The PORT environment variable can be used to define where the probe listens on.  Default is 8081.
